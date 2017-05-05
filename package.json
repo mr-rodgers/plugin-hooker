@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/te-je/plugin-hooker#readme",
   "devDependencies": {
-    "standard-version": "^4.0.0"
+    "standard-version": "^4.0.0",
+    "typescript": "^2.3.2"
   }
 }
