@@ -4,6 +4,7 @@
   "description": "A collection of tools for loading plugins into an application",
   "main": "dist/index.js",
   "scripts": {
+    "release": "standard-version",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/te-je/plugin-hooker/issues"
   },
-  "homepage": "https://github.com/te-je/plugin-hooker#readme"
+  "homepage": "https://github.com/te-je/plugin-hooker#readme",
+  "devDependencies": {
+    "standard-version": "^4.0.0"
+  }
 }
