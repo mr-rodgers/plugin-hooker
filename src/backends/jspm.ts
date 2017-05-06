@@ -26,7 +26,10 @@ export class Jspm implements IPackageFinder {
             path.join(this.pluginDir, "package.json"),
             {recursive: true, persistent: false},
         );
-        watcher.on("change", () => this.find().then(dispatch));
+        // Emit the initial list first
+        this.find()
+            .then(dispatch)
+            .then(() => watcher.on("change", () => this.find().then(dispatch)));
         return () => watcher.close();
     }
 
