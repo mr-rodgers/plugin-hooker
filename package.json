@@ -26,5 +26,8 @@
   "devDependencies": {
     "standard-version": "^4.0.0",
     "typescript": "^2.3.2"
+  },
+  "dependencies": {
+    "rxjs": "^5.3.1"
   }
 }
