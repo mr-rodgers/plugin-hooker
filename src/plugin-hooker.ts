@@ -23,7 +23,9 @@ export type PackageListener = (packages: IPackage[]) => void;
  */
 export type WatchCancellationFunction = () => void;
 
-export type Extension = IExtensionInfo & { packageId: string; value: any; error?: Error };
+export type ErroredExtension = IExtensionInfo & { packageId: string } & {error: Error};
+export type LoadedExtension<T> = IExtensionInfo & { packageId: string } & {value: T};
+export type Extension<T> = (ErroredExtension | LoadedExtension<T>);
 
 export interface IPackage {
     /** A unique identifier for the package */
@@ -69,8 +71,8 @@ export class PluginHooker {
     /**
      * Get a list of extensions which implement a hook
      */
-    private static async getImplementations(packages: IPackage[], hook: string): Promise<Extension[]> {
-        const extensions: Extension[] = [];
+    private static async getImplementations<T>(packages: IPackage[], hook: string): Promise<Array<Extension<T>>> {
+        const extensions: Array<Extension<T>> = [];
         for (const pkg of packages) {
             const contents = pkg.extensions
                 .filter((extInfo) => extInfo.hook === hook);
@@ -87,7 +89,6 @@ export class PluginHooker {
                         ...extInfo,
                         error: err,
                         packageId: pkg.id,
-                        value: null,
                     });
                 }
             }
@@ -103,17 +104,17 @@ export class PluginHooker {
      * Watch for extensions that implement a hook and emit
      * them in batches whenever the underlying configuration changes
      */
-    public watch(hook: string): Rx.Observable<Extension[]> {
+    public watch<T>(hook: string): Rx.Observable<Array<Extension<T>>> {
         return this.packageSubject
-            .mergeMap((packages) => PluginHooker.getImplementations(packages, hook));
+            .mergeMap((packages) => PluginHooker.getImplementations<T>(packages, hook));
     }
 
     /**
      * Load all the plugins which implement a hook without installing a
      * watcher (does not affect previously installed watchers)
      */
-    public async load(hook: string) {
-        return await PluginHooker.getImplementations(await this.finder.find(), hook);
+    public async load<T>(hook: string) {
+        return await PluginHooker.getImplementations<T>(await this.finder.find(), hook);
     }
 
     /**
@@ -152,4 +153,22 @@ export class PluginHooker {
         this.activeWatch = {close, subject};
         return subject;
     }
+}
+
+/**
+ * Type predicate for distinguishing loaded extensions.
+ * See https://github.com/Microsoft/TypeScript/issues/7657 in relation
+ * to this working with array.filter
+ */
+export function isLoaded<T>(ext: Extension<T>): ext is LoadedExtension<T> {
+    return ext.value !== undefined;
+}
+
+/**
+ * Type predicate for distinguishing errored extensions.
+ * See https://github.com/Microsoft/TypeScript/issues/7657 in relation
+ * to this working with array.filter
+ */
+export function isErrored<T>(ext: Extension<T>): ext is ErroredExtension {
+    return ext.error !== undefined;
 }
