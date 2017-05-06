@@ -2,12 +2,14 @@
   "name": "plugin-hooker",
   "version": "0.1.0",
   "description": "A collection of tools for loading plugins into an application",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "release": "standard-version",
     "build": "tsc -p .",
     "prepublish": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postpublish": "npm run clean",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf *.js *.js.map *.d.ts backends"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "@types/node": "^7.0.18",
     "@types/promisify-node": "^0.4.0",
     "@types/systemjs": "^0.20.2",
+    "rimraf": "^2.6.1",
     "standard-version": "^4.0.0",
     "typescript": "^2.3.2"
   },
