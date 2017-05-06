@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A collection of tools for loading plugins into an application",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "release": "standard-version",
     "build": "tsc -p .",
